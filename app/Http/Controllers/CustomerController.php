@@ -43,7 +43,7 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'salon_id'     => 'nullable|string|max:20|unique:customer_infs,salon_id',
+            'salon_id'     => 'nullable|string|max:20',
             'name'         => 'nullable|string|max:60',
             'tel'          => 'nullable|string|max:160',
             'tel2'         => 'nullable|string|max:160',

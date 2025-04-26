@@ -102,6 +102,9 @@
         <textarea name="detail_memo" maxlength="160">{{ old('detail_memo', $customer->detail_memo) }}</textarea>
         <button type="submit">更新</button>
     </form>
+
+    <a href="{{ route('visit.history', $customer->id) }}" class="back-link">← 顧客詳細情報に戻る</a>
+    <br>
     <a href="{{ route('customers.search') }}" class="back-link">← 初めの画面に戻る</a>
 </div>
 </body>

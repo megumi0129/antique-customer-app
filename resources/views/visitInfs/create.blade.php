@@ -115,7 +115,7 @@
         <button type="submit">追加</button>
     </form>
 
-    <a href="{{ route('visit.history', $customer->id) }}" class="back-link">← 戻る</a>
+    <a href="{{ route('visit.history', ['customer' => $customer->id]) }}" class="back-link">← 戻る</a>
     <a href="{{ route('customers.search') }}" class="back-link">← 顧客一覧（TOP）に戻る</a>
 </div>
 </body>

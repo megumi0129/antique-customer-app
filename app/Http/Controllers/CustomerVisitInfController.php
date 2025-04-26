@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CustomerInf;
 use App\Models\CustomerVisitInf;
+use Illuminate\Support\Facades\Storage;
 
 class CustomerVisitInfController extends Controller
 {
@@ -52,11 +53,19 @@ class CustomerVisitInfController extends Controller
         // ファイル保存処理
         for ($i = 1; $i <= 3; $i++) {
             $fileKey = 'file_path' . $i;
-            if ($request->hasFile($fileKey)) {
-                $path = $request->file($fileKey)->store('images', 'public'); // storage/app/public/images に保存
-                $visit->$fileKey = 'storage/' . $path; // URL用パスに変換
+            if ($request->hasFile($fileKey) && $request->file($fileKey)->isValid()) {
+                $extension = $request->file($fileKey)->getClientOriginalExtension();
+                $filename = now()->format('Ymd_His') . '_' . uniqid() . '.' . $extension;
+        
+                $path = $request->file($fileKey)->storeAs('images', $filename, 's3');
+        
+                if ($path) {
+                    $visit->$fileKey = Storage::disk('s3')->url($path);
+                } else {
+                    \Log::error("ファイル保存失敗: $fileKey | filename: $filename");
+                }
             }
-        }
+        }        
 
         $visit->save();
 
@@ -96,15 +105,23 @@ class CustomerVisitInfController extends Controller
         ]));
         $visit->update_time = now();
 
+        // dd($request->file('file_path1'));
         // 画像の更新（元のファイルは残す）
         for ($i = 1; $i <= 3; $i++) {
             $fileKey = 'file_path' . $i;
-            if ($request->hasFile($fileKey)) {
-                $filename = now()->format('YmdHis') . "_{$i}_" . uniqid() . '.' . $request->file($fileKey)->getClientOriginalExtension();
-                $path = $request->file($fileKey)->storeAs('images', $filename, 'public');
-                $visit->$fileKey = 'storage/' . $path;
+            if ($request->hasFile($fileKey) && $request->file($fileKey)->isValid()) {
+                $extension = $request->file($fileKey)->getClientOriginalExtension();
+                $filename = now()->format('Ymd_His') . '_' . uniqid() . '.' . $extension;
+        
+                $path = $request->file($fileKey)->storeAs('images', $filename, 's3');
+        
+                if ($path) {
+                    $visit->$fileKey = Storage::disk('s3')->url($path);
+                } else {
+                    \Log::error("ファイル保存失敗: $fileKey | filename: $filename");
+                }
             }
-        }
+        } 
 
         $visit->save();
 
