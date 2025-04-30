@@ -114,8 +114,11 @@
             @endforeach
         </tbody>
     </table>
+    <div style="margin-top: 20px; text-align: center;">
+        {{ $visits->links() }}
+    </div>
 
-    <a href="{{ route('customers.search') }}" class="back-link">← 戻る</a>
+    <a href="{{ route('customers.search') }}" class="back-link">← はじめに戻る</a>
 </div>
 </body>
 </html>

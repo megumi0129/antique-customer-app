@@ -69,6 +69,19 @@
 <body>
 <div class="container">
     <h1>来店履歴の追加</h1>
+    @if (session('success'))
+        <div style="color: green; font-weight: bold; text-align: center; margin-bottom: 20px;">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div style="color: red; font-weight: bold; text-align: center; margin-bottom: 20px;">
+            @foreach ($errors->all() as $error)
+                <div>{{ $error }}</div>
+            @endforeach
+        </div>
+    @endif
     <form action="{{ route('visitInfs.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 

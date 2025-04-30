@@ -25,7 +25,7 @@ class CustomerController extends Controller
                   ->orWhere('tel', 'like', "%{$keyword}%");
             });
         }
-        $customers = $query->orderBy('id', 'desc')->get();
+        $customers = $query->orderBy('id', 'desc')->paginate(40);
 
         // return view('welcome');
         return view('customers.index', compact('customers'));

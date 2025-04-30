@@ -5,13 +5,17 @@ use Illuminate\Http\Request;
 use App\Models\CustomerInf;
 use App\Models\CustomerVisitInf;
 use Illuminate\Support\Facades\Storage;
+use App\Services\OracleSignatureService;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+
 
 class CustomerVisitInfController extends Controller
 {
     public function index($id)
     {
         $customer = CustomerInf::findOrFail($id);
-        $visits = CustomerVisitInf::where('customer_id', $id)->orderBy('book_time', 'desc')->get();
+        $visits = CustomerVisitInf::where('customer_id', $id)->orderBy('book_time', 'desc')->paginate(40);
 
         return view('visitInfs.index', compact('customer', 'visits'));
     }
@@ -37,7 +41,7 @@ class CustomerVisitInfController extends Controller
             'book_time' => 'nullable|date',
         ]);
     //     dd($request->hasFile('file_path1'), $request->file('file_path1'));
-    // dd($request);
+    // dd($request);f
         $visit = new CustomerVisitInf();
 
         $visit->customer_id = $request->input('customer_id');
@@ -50,23 +54,42 @@ class CustomerVisitInfController extends Controller
         $visit->book_time = $request->input('book_time');
         $visit->update_time = now();
 
+        $signatureService = new OracleSignatureService();
+        $host = 'objectstorage.us-ashburn-1.oraclecloud.com';
+        $namespace = 'idsate1sfsxt'; // 自分のネームスペースに変更してね！
+        $bucket = 'salon-photos';
+
         // ファイル保存処理
         for ($i = 1; $i <= 3; $i++) {
             $fileKey = 'file_path' . $i;
             if ($request->hasFile($fileKey) && $request->file($fileKey)->isValid()) {
-                $extension = $request->file($fileKey)->getClientOriginalExtension();
-                $filename = now()->format('Ymd_His') . '_' . uniqid() . '.' . $extension;
-        
-                $path = $request->file($fileKey)->storeAs('images', $filename, 's3');
-        
-                if ($path) {
-                    $visit->$fileKey = Storage::disk('s3')->url($path);
-                } else {
-                    \Log::error("ファイル保存失敗: $fileKey | filename: $filename");
-                }
-            }
-        }        
+            $extension = $request->file($fileKey)->getClientOriginalExtension();
+            $filename = now()->format('Ymd_His') . '_' . Str::random(10) . '.' . $extension;
 
+            $objectPath = "/n/{$namespace}/b/{$bucket}/o/images/{$filename}";
+            $date = gmdate('D, d M Y H:i:s T');
+            $authorization = $signatureService->createAuthorizationHeader('put', $host, $objectPath, $date);
+
+            $url = "https://{$host}{$objectPath}";
+
+            $fileContents = file_get_contents($request->file($fileKey)->path());
+
+            $response = Http::withHeaders([
+                'Host' => $host,
+                'Date' => $date,
+                'Authorization' => $authorization,
+                'Content-Type' => 'application/octet-stream',
+            ])->withBody($fileContents, 'application/octet-stream')
+              ->put($url);
+
+            if ($response->successful()) {
+                $visit->$fileKey = $url; // URLをDBに保存する
+            } else {
+                \Log::error('ファイル保存エラー: ' . $response->status() . ' | ' . $response->body());
+            }
+            }
+        }
+        
         $visit->save();
 
         return redirect()->route('visit.history', $request->customer_id)
@@ -105,20 +128,38 @@ class CustomerVisitInfController extends Controller
         ]));
         $visit->update_time = now();
 
-        // dd($request->file('file_path1'));
+        $signatureService = new OracleSignatureService();
+        $host = 'objectstorage.us-ashburn-1.oraclecloud.com';
+        $namespace = 'idsate1sfsxt'; // 自分のネームスペースに変更してね！
+        $bucket = 'salon-photos';
+
         // 画像の更新（元のファイルは残す）
         for ($i = 1; $i <= 3; $i++) {
             $fileKey = 'file_path' . $i;
             if ($request->hasFile($fileKey) && $request->file($fileKey)->isValid()) {
                 $extension = $request->file($fileKey)->getClientOriginalExtension();
-                $filename = now()->format('Ymd_His') . '_' . uniqid() . '.' . $extension;
-        
-                $path = $request->file($fileKey)->storeAs('images', $filename, 's3');
-        
-                if ($path) {
-                    $visit->$fileKey = Storage::disk('s3')->url($path);
+                $filename = now()->format('Ymd_His') . '_' . Str::random(10) . '.' . $extension;
+    
+                $objectPath = "/n/{$namespace}/b/{$bucket}/o/images/{$filename}";
+                $date = gmdate('D, d M Y H:i:s T');
+                $authorization = $signatureService->createAuthorizationHeader('put', $host, $objectPath, $date);
+    
+                $url = "https://{$host}{$objectPath}";
+    
+                $fileContents = file_get_contents($request->file($fileKey)->path());
+    
+                $response = Http::withHeaders([
+                    'Host' => $host,
+                    'Date' => $date,
+                    'Authorization' => $authorization,
+                    'Content-Type' => 'application/octet-stream',
+                ])->withBody($fileContents, 'application/octet-stream')
+                  ->put($url);
+    
+                if ($response->successful()) {
+                    $visit->$fileKey = $url; // URLをDBに保存する
                 } else {
-                    \Log::error("ファイル保存失敗: $fileKey | filename: $filename");
+                    \Log::error('ファイル保存エラー: ' . $response->status() . ' | ' . $response->body());
                 }
             }
         } 

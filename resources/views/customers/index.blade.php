@@ -161,6 +161,9 @@
                 @endforeach
             </tbody>
         </table>
+		<div style="margin-top: 20px; text-align: center;">
+			{{ $customers->links() }}
+		</div>
     </div>
 </body>
 </html>
