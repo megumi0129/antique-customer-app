@@ -9,6 +9,8 @@ One of the key features of this system is the integration with **Oracle Cloud In
 Photos associated with customer visits are uploaded to and retrieved from **Oracle Cloud Object Storage**.  
 This integration has been successfully implemented and tested in the **local development environment**.
 
+https://note.com/megumi0129/n/na8eecf5271ec?sub_rt=share_sb
+
 ### OCI Features Used:
 - Object Storage Bucket (for storing service images)
 - Private access configuration (not publicly visible)
