@@ -1,136 +1,68 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>顧客新規登録</title>
-    <style>
-        body {
-            font-family: "Helvetica Neue", Arial, sans-serif;
-            background-color: #f9f9f9;
-            padding: 30px;
-        }
+@extends('layouts.app')
 
-        .form-container {
-            max-width: 600px;
-            background-color: #fff;
-            padding: 25px 30px;
-            margin: auto;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            border-radius: 8px;
-        }
+@section('content')
+<div class="form-container max-w-xl mx-auto bg-white p-6 shadow rounded">
+    <h1 class="text-2xl text-center text-blue-700 mb-6">顧客新規登録</h1>
 
-        h1 {
-            text-align: center;
-            color: #305496;
-            margin-bottom: 25px;
-        }
+    @if ($errors->any())
+        <div class="text-red-600 mb-4 text-sm">
+            <ul class="list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-        .form-group {
-            display: flex;
-            margin-bottom: 15px;
-            align-items: center;
-        }
+    <form method="POST" action="{{ route('customers.store') }}" class="space-y-4">
+        @csrf
 
-        .form-group label {
-            width: 120px;
-            font-weight: bold;
-            color: #333;
-        }
+        <div>
+            <label class="font-bold block mb-1">顧客番号</label>
+            <input type="text" name="salon_id" value="{{ old('salon_id') }}" maxlength="20" class="w-full border px-3 py-2 rounded">
+        </div>
 
-        .form-group input {
-            flex: 1;
-            padding: 8px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
+        <div>
+            <label class="font-bold block mb-1">名前 <span class="text-red-500">*</span></label>
+            <input type="text" name="name" value="{{ old('name') }}" maxlength="60" required class="w-full border px-3 py-2 rounded">
+        </div>
 
-        .btn-submit {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: #4A90E2;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
+        <div>
+            <label class="font-bold block mb-1">電話番号 <span class="text-red-500">*</span></label>
+            <input type="text" name="tel" value="{{ old('tel') }}" maxlength="60" required class="w-full border px-3 py-2 rounded">
+        </div>
 
-        .btn-submit:hover {
-            background-color: #357ABD;
-        }
+        <div>
+            <label class="font-bold block mb-1">電話番号2</label>
+            <input type="text" name="tel2" value="{{ old('tel2') }}" maxlength="60" class="w-full border px-3 py-2 rounded">
+        </div>
 
-        .error-box {
-            color: red;
-            margin-bottom: 15px;
-        }
-    </style>
-</head>
-<body>
-    <div class="form-container">
-        <h1>顧客新規登録</h1>
+        <div>
+            <label class="font-bold block mb-1">電話番号3</label>
+            <input type="text" name="tel3" value="{{ old('tel3') }}" maxlength="60" class="w-full border px-3 py-2 rounded">
+        </div>
 
-        @if ($errors->any())
-            <div class="error-box">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        <div>
+            <label class="font-bold block mb-1">メール</label>
+            <input type="email" name="email" value="{{ old('email') }}" maxlength="255" placeholder="name@example.com" class="w-full border px-3 py-2 rounded">
+        </div>
 
-        <form method="POST" action="{{ route('customers.store') }}">
-            @csrf
+        <div>
+            <label class="font-bold block mb-1">誕生日</label>
+            <input type="date" name="birth" value="{{ old('birth') }}" class="w-full border px-3 py-2 rounded">
+        </div>
 
-            <div class="form-group">
-                <label>顧客番号</label>
-                <input type="text" name="salon_id" value="{{ old('salon_id') }}" maxlength="20">
-            </div>
+        <div>
+            <label class="font-bold block mb-1">メモ(20字まで)</label>
+            <input type="text" name="memo" value="{{ old('memo') }}" maxlength="20" class="w-full border px-3 py-2 rounded">
+        </div>
 
-            <div class="form-group">
-                <label>名前</label>
-                <input type="text" name="name" value="{{ old('name') }}" maxlength="60">
-            </div>
+        <div>
+            <label class="font-bold block mb-1">詳細メモ</label>
+            <textarea name="detail_memo" rows="4" maxlength="160" class="w-full border px-3 py-2 rounded">{{ old('detail_memo') }}</textarea>
+        </div>
 
-            <div class="form-group">
-                <label>電話番号</label>
-                <input type="text" name="tel" value="{{ old('tel') }}" maxlength="60">
-            </div>
-
-            <div class="form-group">
-                <label>電話番号2</label>
-                <input type="text" name="tel2" value="{{ old('tel2') }}" maxlength="60">
-            </div>
-
-            <div class="form-group">
-                <label>電話番号3</label>
-                <input type="text" name="tel3" value="{{ old('tel3') }}" maxlength="60">
-            </div>
-            <div class="form-group">
-                <label>メール</label>
-                <input type="email" name="email" value="{{ old('email') }}" maxlength="255" placeholder="name@example.com">
-            </div>
-            <div class="form-group">
-                <label>誕生日</label>
-                <input type="date" name="birth" value="{{ old('birth') }}">
-            </div>
-
-            <div class="form-group">
-                <label>メモ(20字まで)</label>
-                <input type="text" name="memo" value="{{ old('memo') }}" maxlength="20">
-            </div>
-
-            <div class="form-group" style="flex-direction: column; align-items: flex-start;">
-                <label for="detail_memo" style="margin-bottom: 5px;">詳細メモ</label>
-                <textarea name="detail_memo" id="detail_memo" rows="4" maxlength="160"
-                        style="width: 100%; padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;">{{ old('detail_memo') }}</textarea>
-            </div>
-            <button type="submit" class="btn-submit">登録</button>
-        </form>
-        <a href="{{ route('customers.search') }}" class="back-link">← 初めの画面に戻る</a>
-    </div>
-</body>
-</html>
+        <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">登録</button>
+    </form>
+</div>
+@endsection

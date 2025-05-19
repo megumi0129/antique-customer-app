@@ -35,9 +35,9 @@ class CustomerVisitInfController extends Controller
             'price' => 'nullable|string|max:50',
             'needed_time' => 'nullable|string|max:5',
             'memo' => 'nullable|string|max:160',
-            'file_path1' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'file_path2' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'file_path3' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'file_path1' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'file_path2' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'file_path3' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
             'book_time' => 'nullable|date',
         ]);
     //     dd($request->hasFile('file_path1'), $request->file('file_path1'));
@@ -120,6 +120,9 @@ class CustomerVisitInfController extends Controller
             'price' => 'nullable|string|max:50',
             'needed_time' => 'nullable|string|max:5',
             'memo' => 'nullable|string|max:160',
+            'file_path1' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'file_path2' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'file_path3' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
             'book_time' => 'nullable|date',
         ]);
 

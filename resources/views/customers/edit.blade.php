@@ -1,111 +1,69 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>顧客情報編集</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 30px;
-            background-color: #f9f9f9;
-        }
-        .container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            max-width: 600px;
-            margin: auto;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        label {
-            display: block;
-            margin-top: 12px;
-            font-weight: bold;
-        }
-        input[type="text"],
-        input[type="date"],
-        input[type="email"],
-        textarea {
-            width: 100%;
-            padding: 8px;
-            margin-top: 4px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        textarea {
-            height: 80px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .success {
-            color: green;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h1>顧客情報編集</h1>
+@extends('layouts.app')
+
+@section('content')
+<div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+    <h1 class="text-xl font-bold text-center text-gray-700 mb-6">顧客情報編集</h1>
 
     @if (session('success'))
-        <div class="success">
+        <div class="text-green-600 font-semibold text-center mb-4">
             {{ session('success') }}
         </div>
     @endif
 
-    <form action="{{ route('customers.update', $customer->id) }}" method="POST">
+    <form action="{{ route('customers.update', $customer->id) }}" method="POST" class="space-y-4">
         @csrf
         @method('PUT')
 
-        <label>顧客番号</label>
-        <input type="text" name="salon_id" value="{{ old('salon_id', $customer->salon_id) }}">
+        <div>
+            <label class="block font-semibold mb-1">顧客番号</label>
+            <input type="text" name="salon_id" value="{{ old('salon_id', $customer->salon_id) }}" class="w-full border rounded px-3 py-2">
+        </div>
 
-        <label>名前</label>
-        <input type="text" name="name" value="{{ old('name', $customer->name) }}" maxlength="60">
+        <div>
+            <label class="block font-semibold mb-1">名前 <span class="text-red-500">*</span></label>
+            <input type="text" name="name" value="{{ old('name', $customer->name) }}" maxlength="60" required class="w-full border rounded px-3 py-2">
+        </div>
 
-        <label>電話番号</label>
-        <input type="text" name="tel" value="{{ old('tel', $customer->tel) }}">
+        <div>
+            <label class="block font-semibold mb-1">電話番号 <span class="text-red-500">*</span></label>
+            <input type="text" name="tel" value="{{ old('tel', $customer->tel) }}" required class="w-full border rounded px-3 py-2">
+        </div>
 
-        <label>電話番号２</label>
-        <input type="text" name="tel2" value="{{ old('tel2', $customer->tel2) }}">
+        <div>
+            <label class="block font-semibold mb-1">電話番号２</label>
+            <input type="text" name="tel2" value="{{ old('tel2', $customer->tel2) }}" class="w-full border rounded px-3 py-2">
+        </div>
 
-        <label>電話番号３</label>
-        <input type="text" name="tel3" value="{{ old('tel3', $customer->tel3) }}">
+        <div>
+            <label class="block font-semibold mb-1">電話番号３</label>
+            <input type="text" name="tel3" value="{{ old('tel3', $customer->tel3) }}" class="w-full border rounded px-3 py-2">
+        </div>
 
-        <label>誕生日</label>
-        <input type="date" name="birth" value="{{ old('birth', $customer->birth) }}">
+        <div>
+            <label class="block font-semibold mb-1">誕生日</label>
+            <input type="date" name="birth" value="{{ old('birth', $customer->birth) }}" class="w-full border rounded px-3 py-2">
+        </div>
 
-        <label>メールアドレス</label>
-        <input type="email" name="email" value="{{ old('email', $customer->email) }}" maxlength="100">
+        <div>
+            <label class="block font-semibold mb-1">メールアドレス</label>
+            <input type="email" name="email" value="{{ old('email', $customer->email) }}" maxlength="100" class="w-full border rounded px-3 py-2">
+        </div>
 
-        <label>メモ</label>
-        <input type="text" name="memo" value="{{ old('memo', $customer->memo) }}" maxlength="20">
+        <div>
+            <label class="block font-semibold mb-1">メモ</label>
+            <input type="text" name="memo" value="{{ old('memo', $customer->memo) }}" maxlength="20" class="w-full border rounded px-3 py-2">
+        </div>
 
-        <label>詳細メモ</label>
-        <textarea name="detail_memo" maxlength="160">{{ old('detail_memo', $customer->detail_memo) }}</textarea>
-        <button type="submit">更新</button>
+        <div>
+            <label class="block font-semibold mb-1">詳細メモ</label>
+            <textarea name="detail_memo" maxlength="160" rows="4" class="w-full border rounded px-3 py-2">{{ old('detail_memo', $customer->detail_memo) }}</textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600">更新</button>
     </form>
 
-    <a href="{{ route('visit.history', $customer->id) }}" class="back-link">← 顧客詳細情報に戻る</a>
-    <br>
-    <a href="{{ route('customers.search') }}" class="back-link">← 初めの画面に戻る</a>
+    <div class="text-center mt-4 space-y-2">
+        <a href="{{ route('visit.history', $customer->id) }}" class="text-green-600 text-sm hover:underline block">← 顧客詳細情報に戻る</a>
+    </div>
 </div>
-</body>
-</html>
+@endsection

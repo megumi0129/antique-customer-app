@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CustomerInf;
+use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
@@ -22,10 +23,15 @@ class CustomerController extends Controller
             $query->where(function($q) use ($keyword) {
                 $q->where('name', 'like', "%{$keyword}%")
                   ->orWhere('salon_id', 'like', "%{$keyword}%")
-                  ->orWhere('tel', 'like', "%{$keyword}%");
+                  ->orWhere('tel', 'like', "%{$keyword}%")
+                  ->orWhere('tel2', 'like', "%{$keyword}%")
+                  ->orWhere('tel3', 'like', "%{$keyword}%");
             });
         }
-        $customers = $query->orderBy('id', 'desc')->paginate(40);
+        $customers = $query->leftJoin(DB::raw('(SELECT customer_id, MAX(book_time) as latest_visit FROM customer_visit_infs GROUP BY customer_id) as visits'), 'customer_infs.id', '=', 'visits.customer_id')
+        ->select('customer_infs.*', 'visits.latest_visit')
+        ->orderByDesc('visits.latest_visit')
+        ->paginate(40);
 
         // return view('welcome');
         return view('customers.index', compact('customers'));
@@ -58,9 +64,9 @@ class CustomerController extends Controller
     
         $validated['update_time'] = now(); // 自動で現在時刻を入れておく
     
-        CustomerInf::create($validated);
-    
-        return redirect()->route('customers.search')->with('success', '顧客を登録しました！');
+        $customer = CustomerInf::create($validated);
+        return redirect()->route('visit.history', $customer->id)->with('success', '顧客を登録しました！');
+        // return redirect()->route('customers.search')->with('success', '顧客を登録しました！');
     }
 
     public function edit($id)
